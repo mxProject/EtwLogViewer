@@ -7,6 +7,10 @@ This tool is a simple ETW log viewer using EtwStream.
 
 ## Features ##
 
+* Displays the trace event of the selected provider.
+* Displays the value of each property of the TraceEvent class and the value of the payload. You can select the values to display.
+* In the current version, tracing event filtering is not implemented.
+
 ## Requirement ##
 
 * .NET Framework 4.6
