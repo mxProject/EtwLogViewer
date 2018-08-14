@@ -11,10 +11,14 @@ This tool is a simple ETW log viewer using EtwStream.
 * Displays the value of each property of the TraceEvent class and the value of the payload. You can select the values to display.
 * In the current version, tracing event filtering is not implemented.
 
-## Requirement ##
+## Requirements ##
 
 * .NET Framework 4.6
 * EtwStream.Core 1.3.3 (https://github.com/neuecc/EtwStream)
+
+## releases ##
+
+* [0.5.0.0](./release_binary/mxProject.Tools.ETWLogViewer_0.5.0.0.zip)
 
 ## Usage ##
 
@@ -41,11 +45,11 @@ This tool is a simple ETW log viewer using EtwStream.
   <KnownPayloads>
     <string>LoggerName</string>
     <string>Sequence</string>
-	<string>Time</string>
-	<string>Message</string>
-	<string>MemberName</string>
-	<string>FilePath</string>
-	<string>Line</string>
+    <string>Time</string>
+    <string>Message</string>
+    <string>MemberName</string>
+    <string>FilePath</string>
+    <string>Line</string>
   </KnownPayloads>
   
   <!-- Visible fields -->
