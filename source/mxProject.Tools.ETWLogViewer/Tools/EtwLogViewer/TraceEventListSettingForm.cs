@@ -38,15 +38,15 @@ namespace mxProject.Tools.EtwLogViewer
 
             this.CancelButton = btnCancel;
 
-            btnSelect.Click += btnSelect_Click;
-            btnDeselect.Click += btnDeselect_Click;
-            btnMoveUp.Click += btnMoveUp_Click;
-            btnMoveDown.Click += btnMoveDown_Click;
+            btnSelect.Click += BtnSelect_Click;
+            btnDeselect.Click += BtnDeselect_Click;
+            btnMoveUp.Click += BtnMoveUp_Click;
+            btnMoveDown.Click += BtnMoveDown_Click;
 
-            txtMaxCount.Validating += txtMaxCount_Validating;
+            txtMaxCount.Validating += TxtMaxCount_Validating;
 
-            btnOk.Click += btnOk_Click;
-            btnCancel.Click += btnCancel_Click;
+            btnOk.Click += BtnOk_Click;
+            btnCancel.Click += BtnCancel_Click;
 
         }
 
@@ -57,7 +57,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnOk_Click(object sender, EventArgs e)
+        private void BtnOk_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
             this.Close();
@@ -68,7 +68,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
@@ -79,7 +79,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnSelect_Click(object sender, EventArgs e)
+        private void BtnSelect_Click(object sender, EventArgs e)
         {
             MoveSelectedField(lstUnselected, lstSelected);
         }
@@ -89,7 +89,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnDeselect_Click(object sender, EventArgs e)
+        private void BtnDeselect_Click(object sender, EventArgs e)
         {
             MoveSelectedField(lstSelected, lstUnselected);
         }
@@ -99,7 +99,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnMoveUp_Click(object sender, EventArgs e)
+        private void BtnMoveUp_Click(object sender, EventArgs e)
         {
             MoveUpField(lstSelected);
         }
@@ -109,7 +109,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnMoveDown_Click(object sender, EventArgs e)
+        private void BtnMoveDown_Click(object sender, EventArgs e)
         {
             MoveDownField(lstSelected);
         }
@@ -119,7 +119,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtMaxCount_Validating(object sender, CancelEventArgs e)
+        private void TxtMaxCount_Validating(object sender, CancelEventArgs e)
         {
             if (!ValidateMaxRowCount())
             {
@@ -212,9 +212,10 @@ namespace mxProject.Tools.EtwLogViewer
         private ListViewItem CreateFieldListItem(ITraceEventField field)
         {
 
-            ListViewItem item = new ListViewItem(field.GetCaption());
-
-            item.Tag = field;
+            ListViewItem item = new ListViewItem(field.GetCaption())
+            {
+                Tag = field
+            };
 
             return item;
 
@@ -321,8 +322,7 @@ namespace mxProject.Tools.EtwLogViewer
 
             foreach ( ListViewItem item in target.Items)
             {
-                ITraceEventField field = item.Tag as ITraceEventField;
-                if (field != null) { fields.Add(field); }
+                if (item.Tag is ITraceEventField field) { fields.Add(field); }
             }
 
             return fields;
@@ -348,7 +348,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// <returns></returns>
         private int GetMaxRowCount()
         {
-            if (!string.IsNullOrEmpty(txtMaxCount.Text) && int.TryParse(txtMaxCount.Text, out int value) && value > 0)
+            if (!string.IsNullOrEmpty(txtMaxCount.Text) && int.TryParse(txtMaxCount.Text, out int value) && value >= 0)
             {
                 return value;
             }
@@ -364,7 +364,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// <returns></returns>
         private bool ValidateMaxRowCount()
         {
-            if (!string.IsNullOrEmpty(txtMaxCount.Text) && int.TryParse(txtMaxCount.Text, out int value) && value > 0)
+            if (!string.IsNullOrEmpty(txtMaxCount.Text) && int.TryParse(txtMaxCount.Text, out int value) && value >= 0)
             {
                 return true;
             }

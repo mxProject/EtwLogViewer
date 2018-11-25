@@ -41,9 +41,9 @@ namespace mxProject.Tools.EtwLogViewer
         /// <param name="id"></param>
         public EtwProvider(string friendlyName, string name, Guid id)
         {
-            m_FriendlyName = friendlyName;
-            m_Name = name;
-            m_ID = id;
+            FriendlyName = friendlyName;
+            Name = name;
+            ID = id;
         }
 
         #endregion
@@ -51,29 +51,17 @@ namespace mxProject.Tools.EtwLogViewer
         /// <summary>
         /// 
         /// </summary>
-        public string Name
-        {
-            get { return m_Name; }
-        }
-        private string m_Name;
+        public string Name { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        public Guid ID
-        {
-            get { return m_ID; }
-        }
-        private Guid m_ID;
+        public Guid ID { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string FriendlyName
-        {
-            get { return m_FriendlyName; }
-        }
-        private string m_FriendlyName;
+        public string FriendlyName { get; }
 
         /// <summary>
         /// 
@@ -81,13 +69,13 @@ namespace mxProject.Tools.EtwLogViewer
         /// <returns></returns>
         internal string GetNameOrID()
         {
-            if ( m_ID == Guid.Empty)
+            if ( ID == Guid.Empty)
             {
-                return m_Name;
+                return Name;
             }
             else
             {
-                return m_ID.ToString();
+                return ID.ToString();
             }
         }
 

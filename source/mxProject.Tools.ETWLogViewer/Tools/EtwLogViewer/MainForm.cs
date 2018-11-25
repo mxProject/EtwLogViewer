@@ -67,9 +67,9 @@ namespace mxProject.Tools.EtwLogViewer
             this.FormClosing += Form_FormClosing;
             this.FormClosed += Form_FormClosed;
 
-            mnuListSetting.Click += mnuListSetting_Click;
+            mnuListSetting.Click += MnuListSetting_Click;
 
-            lstProvider.ItemChecked += lstProvider_ItemChecked;
+            lstProvider.ItemChecked += LstProvider_ItemChecked;
 
         }
 
@@ -118,7 +118,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void mnuListSetting_Click(object sender, EventArgs e)
+        private void MnuListSetting_Click(object sender, EventArgs e)
         {
 
             using (TraceEventListSettingForm frm = new TraceEventListSettingForm())
@@ -135,7 +135,7 @@ namespace mxProject.Tools.EtwLogViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void lstProvider_ItemChecked(object sender, ItemCheckedEventArgs e)
+        private void LstProvider_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             RegistProvider(e.Item.Tag as EtwProvider, e.Item.Checked);
         }
@@ -257,9 +257,10 @@ namespace mxProject.Tools.EtwLogViewer
                 provider.FriendlyName
                 , provider.Name
                 , provider.ID == Guid.Empty ? "" : provider.ID.ToString()
-            });
-
-            item.Tag = provider;
+            })
+            {
+                Tag = provider
+            };
 
             return item;
 
@@ -278,7 +279,7 @@ namespace mxProject.Tools.EtwLogViewer
             try
             {
 
-                this.Cursor = Cursors.WaitCursor;
+                Cursor = Cursors.WaitCursor;
 
                 if (regist)
                 {
@@ -292,11 +293,11 @@ namespace mxProject.Tools.EtwLogViewer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
-                this.Cursor = Cursors.Default;
+                Cursor = Cursors.Default;
             }
 
         }
@@ -363,11 +364,13 @@ namespace mxProject.Tools.EtwLogViewer
         private void GridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
 
-            TraceEvent log = m_Context.GetTraceEventAt(e.RowIndex);
-
             if (e.ColumnIndex < m_ListSetting.VisibleFields.Count)
             {
-                e.Value = m_ListSetting.VisibleFields[e.ColumnIndex].GetValue(log);
+                if (e.RowIndex < m_Context.CurrentTraceEventCount)
+                {
+                    TraceEvent log = m_Context.GetTraceEventAt(e.RowIndex);
+                    e.Value = m_ListSetting.VisibleFields[e.ColumnIndex].GetValue(log);
+                }
             }
 
         }
@@ -380,14 +383,14 @@ namespace mxProject.Tools.EtwLogViewer
 
             int count = m_Context.CurrentTraceEventCount;
 
-            this.grdLog.RowCount = count;
+            grdLog.RowCount = count;
 
             if (count > 0)
             {
-                this.grdLog.FirstDisplayedScrollingRowIndex = count - 1;
+                grdLog.FirstDisplayedScrollingRowIndex = count - 1;
             }
 
-            this.grdLog.Invalidate();
+            grdLog.Invalidate();
 
         }
 
@@ -405,9 +408,8 @@ namespace mxProject.Tools.EtwLogViewer
 
             EtwContext.Initialize();
 
-            m_Context = new EtwContext(10, null);
+            m_Context = new EtwContext(10, null, OnReceivedLog);
 
-            m_Context.Received += ETWContext_Received;
             m_Context.MaxTraceEventCountChanged += ETwContext_MaxTraceEventCountChanged;
 
         }
@@ -420,9 +422,9 @@ namespace mxProject.Tools.EtwLogViewer
         private void ETwContext_MaxTraceEventCountChanged(object sender, EventArgs e)
         {
 
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new EventHandler(ETwContext_MaxTraceEventCountChanged), new object[] { sender, e });
+                Invoke(new EventHandler(ETwContext_MaxTraceEventCountChanged), new object[] { sender, e });
                 return;
             }
 
@@ -433,19 +435,20 @@ namespace mxProject.Tools.EtwLogViewer
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ETWContext_Received(object sender, TraceEventArgs e)
+        /// <param name="traceEvent"></param>
+        private void OnReceivedLog(TraceEvent traceEvent)
         {
 
             if (m_FormClosing) { return; }
-            if (this.IsDisposed) { return; }
+            if (IsDisposed) { return; }
 
-            if (this.InvokeRequired)
+            if (m_Context.MaxTraceEventCount < 1) { return; }
+
+            if (InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(new TraceEventHandler(ETWContext_Received), new object[] { sender, e });
+                    Invoke(new Action<TraceEvent>(OnReceivedLog), new object[] { traceEvent });
                 }
                 catch (ObjectDisposedException)
                 {
